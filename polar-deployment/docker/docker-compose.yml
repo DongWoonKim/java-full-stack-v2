@@ -1,0 +1,50 @@
+services:
+  edge-service:
+    build: /Users/kdw/Desktop/labs/polar-services-v2/edge-service
+    image: "edge-service"
+    container_name: "edge-service"      
+    ports:
+      - "9000:9000"
+    environment:
+      - CATALOG_SERVICE_URL=http://catalog-service:9001
+      - ORDER_SERVICE_URL=http://order-service:9002
+  catalog-service:
+    build: /Users/kdw/Desktop/labs/polar-services-v2/catalog-service
+    image: "catalog-service"
+    container_name: "catalog-service"
+    depends_on:
+      - polar-mysql
+    ports:
+      - "9001:9001"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://polar-mysql:3306/catalog?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
+  order-service:
+    build: /Users/kdw/Desktop/labs/polar-services-v2/order-service
+    image: "order-service"
+    container_name: "order-service"
+    depends_on:
+      - polar-mysql
+    ports:
+      - "9002:9002"
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:mysql://polar-mysql:3306/order?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
+  polar-mysql:
+    image: "mysql:latest"
+    container_name: "polar-mysql"
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "1234"
+    volumes:
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+  polar-rabbitmq:
+    image: "rabbitmq:management"
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=1234
+    volumes:
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+ 

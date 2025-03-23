@@ -1,0 +1,35 @@
+server:
+  port: 9002
+spring:
+  application:
+    name: order-service
+  r2dbc:
+    url: ${SPRING_R2DBC_URL:r2dbc:mysql://localhost:3307/order}
+    username: root
+    password: 1234
+  cloud:
+    function:
+      definition: dispatchOrder
+    stream:
+      bindings:
+        dispatchOrder-in-0:
+          destination: order-dispatched
+          group: ${spring.application.name}
+          contentType: application/json
+        acceptOrder-out-0:
+          destination: order-accepted
+          contentType: application/json
+      rabbit:
+        bindings:
+          acceptOrder-out-0:
+            producer:
+              transacted: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: user
+    password: 1234
+    connection-timeout: 5s
+
+polar:
+  catalog-service-url: "http://localhost:9001"
