@@ -19,11 +19,20 @@ spring:
         - id: order-service
           uri: ${ORDER_SERVICE_URL:http://localhost:9002}/orders
           predicates:
-            - Path=/orders/**, /catalogs/**
+            - Path=/orders/**
           filters:
             - name: CircuitBreaker
               args:
                 name: orderCircuitBreaker
+                fallbackUri: forward:/service-fallback
+        - id: auth-service
+          uri: ${AUTH_SERVICE_URL:http://localhost:9004}/auths
+          predicates:
+            - Path=/auths/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: authCircuitBreaker
                 fallbackUri: forward:/service-fallback
 
 resilience4j:
@@ -37,3 +46,7 @@ resilience4j:
     configs:
       default:
         timeout-duration: 5s
+
+logging:
+  level:
+    com.example.gateway.RequestLoggingFilter: INFO
