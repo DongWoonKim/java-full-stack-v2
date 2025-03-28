@@ -26,7 +26,9 @@ spec:
           ports:
             - containerPort: 9002
           env:
+            - name: SPRING_RABBITMQ_HOST
+              value: polar-rabbitmq
             - name: CATALOG_SERVICE_URL
-              value: http://catalog-service:9001
-            - name: SPRING_DATASOURCE_URL
-              value: jdbc:mysql://polar-mysql:3306/catalog?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
+              value: http://catalog-service:80
+            - name: SPRING_R2DBC_URL
+              value: r2dbc:mysql://polar-mysql:3306/order

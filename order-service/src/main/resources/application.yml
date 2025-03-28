@@ -25,11 +25,11 @@ spring:
             producer:
               transacted: true
   rabbitmq:
-    host: localhost
+    host: ${SPRING_RABBITMQ_HOST:localhost}
     port: 5672
     username: user
     password: 1234
     connection-timeout: 5s
 
 polar:
-  catalog-service-url: "http://localhost:9001"
+  catalog-service-url: ${CATALOG_SERVICE_URL:http://localhost:9001}
