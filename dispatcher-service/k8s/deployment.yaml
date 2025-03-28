@@ -1,26 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: $title$
+  name: dispatcher-service
   labels:
-    app: $title$
+    app: dispatcher-service
 spec:
-  replicas: $1$
+  replicas: 1
   selector:
     matchLabels:
-      app: $title$
+      app: dispatcher-service
   template:
     metadata:
-      name: $title$
+      name: dispatcher-service
       labels:
-        app: $title$
+        app: dispatcher-service
     spec:
       containers:
-        - name: $title$
-          image: $nginx$
+        - name: dispatcher-service
+          image: dispatcher-service
           imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command: [ "sh", "-c", "sleep 5" ]
           ports:
-            - containerPort: $80$
-              protocol: $TCP$
-      restartPolicy: Always
-      $END$
+            - containerPort: 9003
+          env:
+            - name: SPRING_RABBITMQ_HOST
+              value: polar-rabbitmq

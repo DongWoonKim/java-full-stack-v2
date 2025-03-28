@@ -1,13 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: $title$
+  name: dispatcher-service
 spec:
+  type: ClusterIP
   selector:
-    app: $title$
+    app: dispatcher-service
   ports:
-    - protocol: $TCP$
-      port: $80$
-      targetPort: $8080$
-  type: NodePort
-  $END$
+    - protocol: TCP
+      port: 80
+      targetPort: 9003
