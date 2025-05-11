@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  labels:
+    app: order-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+        - name: order-service
+          # ECR 이미지 주소로 수정
+          image: 039612853048.dkr.ecr.ap-northeast-2.amazonaws.com/order-service:latest
+          # EKS에서는 Always를 권장
+          imagePullPolicy: Always
+          lifecycle:
+            preStop:
+              exec:
+                command: [ "sh", "-c", "sleep 5" ]
+          ports:
+            - containerPort: 9001
+          env:
+            - name: CATALOG_SERVICE_URL
+              value: http://catalog-service:80
+            - name: CONFIG_SERVICE_URL
+              value: http://config-service:8888
+            - name: SPRING_R2DBC_URL
+              value: r2dbc:mysql://polar-mysql:3306/order
+            - name: SPRING_FLYWAY_URL
+              value: jdbc:mysql://polar-mysql:3306/order
+            - name: SPRING_RABBITMQ_HOST
+              value: polar-rabbitmq
